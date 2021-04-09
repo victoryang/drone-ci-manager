@@ -1,0 +1,56 @@
+<div style="height:100%">
+  <el-card style="min-height:100%">
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
+      <!--project name-->
+      <el-form-item label="Project name" prop="name" style="width: 50%;">
+        <el-input v-model="ruleForm.name"></el-input>
+      </el-form-item>
+      <!--UnZip Dir-->
+      <el-form-item label="UnZip Dir" prop="unzip_dir" style="width: 50%;">
+        <el-input v-model="ruleForm.unzip_dir"></el-input>
+      </el-form-item>
+      <!--Http Port-->
+      <el-form-item label="Http Port" prop="http_port" style="width: 50%;">
+        <el-input v-model="ruleForm.http_port"></el-input>
+      </el-form-item>
+      <!--Start Script-->
+      <el-form-item label="Start Script" prop="start_script" style="width: 50%;">
+        <el-input v-model="ruleForm.start_script"></el-input>
+      </el-form-item>
+      <!--Stop Script-->
+      <el-form-item label="Stop Script" prop="stop_script" style="width: 50%;">
+        <el-input v-model="ruleForm.stop_script"></el-input>
+      </el-form-item>
+      <!--From Image-->
+      <el-form-item label="From Image" prop="region">
+        <el-select v-model="ruleForm.region" placeholder="Select">
+          <el-option label="java8:v19" value="java8:v19"></el-option>
+          <el-option label="base-v2020java8" value="base-v2020java8"></el-option>
+        </el-select>
+      </el-form-item>
+      <!--Envs-->
+      <el-form-item label="Env" prop="type">
+        <el-checkbox-group v-model="ruleForm.type">
+          <el-checkbox label="Sep" name="type"></el-checkbox>
+          <el-checkbox label="Staging" name="type"></el-checkbox>
+          <el-checkbox label="Rc" name="type"></el-checkbox>
+          <el-checkbox label="Release" name="type"></el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <!--Extra Start script-->
+      <el-form-item label="Extra Start script" prop="start_script_desc" style="width: 70%;">
+        <el-input type="textarea" v-model="ruleForm.start_script_desc"></el-input>
+      </el-form-item>
+      <!--Extra Docker script-->
+      <el-form-item label="Extra Docker script" prop="dockerfile_desc" style="width: 70%;">
+        <el-input type="textarea" v-model="ruleForm.dockerfile_desc"></el-input>
+      </el-form-item>
+
+      <!--submit-->
+      <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')">Create</el-button>
+        <el-button @click="resetForm('ruleForm')">Reset</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
+</div>

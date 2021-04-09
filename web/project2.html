@@ -1,0 +1,139 @@
+<div style="height:100%">
+	<el-card style="min-height:100%">
+		<el-row>
+			<el-col :span="12">
+				<el-card class="content-card">
+					<div slot="header" class="content-card-header">
+						<font color="#99A9BF">
+							构建信息
+						</font>
+					</div>
+
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">构建命令: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.build_cmd }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">目标文件: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.target }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">解压后目录: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.unzip_dir }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">使用语言: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.lang }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">特殊依赖: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.build_dependency }}</font>
+						</el-col>
+					</el-row>
+				</el-card>
+			</el-col>
+
+			<el-col :span="12" style="padding-left:20px">
+				<el-card class="content-card">
+					<div slot="header" class="content-card-header">
+						<font color="#99A9BF">
+							运行时信息
+						</font>
+					</div>
+
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">启动脚本: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.start_cmd }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">停止脚本: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.stop_cmd }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">启动前命令: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.pre_cmd }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">Http端口: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.http_port }}</font>
+						</el-col>
+					</el-row>
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">Rpc端口: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.rpc_port }}</font>
+						</el-col>
+					</el-row>
+				</el-card>
+			</el-col>
+		</el-row>
+
+		<el-row>
+			<el-col :span="16" style="padding-top: 10px">
+				<el-card>
+					<div slot="header" class="content-card-header">
+						<font color="#99A9BF">
+							创建 build 脚本
+						</font>
+
+						<el-button style="float: right; padding: 3px 0" type="text" @click.prevent="createScrpit">创建</el-button>
+					</div>
+
+					<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
+						<el-form-item label="勾选环境" prop="envs">
+							<el-checkbox-group v-model="ruleForm.envs">
+								<el-checkbox label="sep" name="envs"></el-checkbox>
+								<el-checkbox label="staging" name="envs"></el-checkbox>
+								<el-checkbox label="rc" name="envs"></el-checkbox>
+								<el-checkbox label="release" name="envs"></el-checkbox>
+							</el-checkbox-group>
+						</el-form-item>
+
+						<el-form-item label="From Image" prop="from_image">
+							<el-select v-model="ruleForm.from_image" placeholder="Select">
+								<el-option label="java8:v19" value="docker.snowballfinance.com:5000/java8:v19"></el-option>
+								<el-option label="base-v2020java8" value="docker.snowballfinance.com:5000/base-v2020java8"></el-option>
+							</el-select>
+						</el-form-item>
+					</el-form>
+				</el-card>
+			</el-col>
+		</el-row>
+	</el-card>
+</div>
