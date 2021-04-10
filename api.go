@@ -15,7 +15,7 @@ func formatErr(err error) gin.H {
 func createProject(c *gin.Context) {
 	project := c.Param("project")
 
-	err := CreateProject(project)
+	err := CreateWorkingDir(project)
 	if err!=nil {
 		defer func() {
 			c.Error(err)
@@ -29,7 +29,7 @@ func createProject(c *gin.Context) {
 }
 
 func getProjectList(c *gin.Context) {
-	projects, err := getProjects()
+	projects, err := GetProjectsFromDir()
 	if err!=nil {
 		defer func() {
 			c.Error(err)
@@ -58,7 +58,7 @@ func getProjectInfo(c *gin.Context) {
 func deleteProject(c *gin.Context) {
 	project := c.Param("project")
 
-	err := DeleteProject(project)
+	err := DeleteProjectFromDir(project)
 	if err!=nil {
 		defer func() {
 			c.Error(err)
