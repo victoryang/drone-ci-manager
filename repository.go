@@ -14,6 +14,7 @@ func init() {
 type Repository struct {
 	gorm.Model      `json:"-"`
 
+	// e.g. ops/sce-rolling
 	Name 			string 		`gorm:"column:name;size:64"`
 	GitUrl			string 		`gorm:"column:git_url;size:64"`
 	RollingProject 		[]string 	`gorm:"column:rolling_project;size:64"`

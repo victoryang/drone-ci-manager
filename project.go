@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "os"
+    "os/exec"
     "path"
     "strings"
     "text/template"
@@ -31,19 +32,19 @@ var (
     ProjectDir = "projects"
 )
 
-type Param struct {
+type Project struct {
     Project         string      `json:"-"`
-    UnZipDir        string      `json:"unzip_dir"`
-    HTTPPort        string      `json:"http_port"`
-    RPCPort         string      `json:"rpc_port"`
-    StartCmd        string      `json:"start_cmd"`
-    PreCmd          string      `json:"pre_cmd"`
-    StopCmd         string      `json:"stop_cmd"`
-    FromImage       string      `json:"from_image"`
-    BuildDependency    string   `json:"build_dependency"`
+    UnZipDir        string      `json:"unzipDir"`
+    HTTPPort        string      `json:"httpPort"`
+    RPCPort         string      `json:"rpcPort"`
+    StartCmd        string      `json:"startCmd"`
+    PreCmd          string      `json:"preCmd"`
+    StopCmd         string      `json:"stopCmd"`
+    FromImage       string      `json:"fromImage"`
+    BuildDependency    string   `json:"buildDependency"`
 }
 
-func (p *Param) generateFile(target string, outputDir string) error {
+func (p *Project) generateFile(target string, outputDir string) error {
     temp, err := template.ParseFiles(path.Join(InputBase, target))
     if err!=nil {
         return err
@@ -68,10 +69,10 @@ func (p *Param) generateFile(target string, outputDir string) error {
     return os.Chmod(output, 0755)
 }
 
-func (p *Param) generateFiles(envs []string) error {
+func (p *Project) generateFiles(envs []string) error {
     fmt.Println("Generating scripts...")
 
-    workingDir := getProjectDir(project)
+    workingDir := getProjectDir(p.Project)
     _,err := os.Stat(workingDir)
     if err!=nil {
         return err
@@ -83,6 +84,14 @@ func (p *Param) generateFiles(envs []string) error {
         env := EnvPrefix + strings.ToLower(e)
         envDir := path.Join(workingDir, env)
         fmt.Println("\nGenerating ", envDir)
+
+        // create sub directory
+        err = os.Mkdir(envDir, os.ModeDir)
+        if err!=nil {
+            fmt.Println("mk sub dir err:", err)
+            return err
+        }
+        os.Chmod(envDir, 0755)
 
         // generate files
         for _,file :=range TemplateFiles {
@@ -122,7 +131,12 @@ func getProjectDir(project string) string {
 func CreateWorkingDir(project string) error {
     workingDir := getProjectDir(project)
 
-    return os.Mkdir(workingDir, os.ModeDir)
+    err := os.MkdirAll(workingDir, os.ModeDir)
+    if err!=nil {
+        return err
+    }
+
+    return os.Chmod(workingDir, 0755)
 }
 
 func GetProjectsFromDir() ([]string, error){
@@ -147,7 +161,7 @@ func GetDockerfileFromBytes(project string, env string) string {
     fromBytes, _ := exec.Command("bash", "-c", `cd `+dir+` && head -n 1 Dockerfile  | awk -F'/' '{print $2}' | sed '{s/:/-/g}' | awk -F'_' '{print $NF}'`).Output()
     from := strings.TrimSpace(string(fromBytes))
     if len(from) == 0 {
-        return nil
+        return ""
     }
 
     return from

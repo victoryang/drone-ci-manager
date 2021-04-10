@@ -57,23 +57,23 @@ const Project = {
 	data() {
 		return {
 			buildInfo: {
-				build_cmd: 'test',
+				buildCmd: '',
 				target: '',
-				unzip_dir: '',
+				unzipDir: '',
 				lang: '',
-				build_dependency: '',
-				start_cmd: '',
-				stop_cmd: '',
-				pre_cmd: '',
-				http_port: '',
-				rpc_port: '',
+				buildDependency: '',
+				startCmd: '',
+				stopCmd: '',
+				preCmd: '',
+				httpPort: '',
+				rpcPort: '',
 			},
 			ruleForm: {
-				from_image: '',
+				fromImage: '',
 				envs: [],
 			},
 			rules: {
-				from_image: [
+				fromImage: [
 					{ required: true, message: 'Please select from image', trigger: 'change' }
 				],
 				envs: [
@@ -100,15 +100,15 @@ const Project = {
 		},
 		createScrpit() {
 			this.$http.post("/projects/" + this.$route.params.project + "/scripts", {
-				param: {
-					unzip_dir: this.buildInfo.unzip_dir,
-					build_dependency: this.buildInfo.build_dependency,
-					start_cmd: this.buildInfo.start_cmd,
-					stop_cmd: this.buildInfo.stop_cmd,
-					pre_cmd: this.buildInfo.pre_cmd,
-					http_port: this.buildInfo.http_port,
-					rpc_port: this.buildInfo.rpc_port,
-					from_image: this.ruleForm.from_image,
+				projectInfo: {
+					unzipDir: this.buildInfo.unzipDir,
+					buildDependency: this.buildInfo.buildDependency,
+					startCmd: this.buildInfo.startCmd,
+					stopCmd: this.buildInfo.stopCmd,
+					preCmd: this.buildInfo.preCmd,
+					httpPort: this.buildInfo.httpPort,
+					rpcPort: this.buildInfo.rpcPort,
+					fromImage: this.ruleForm.fromImage,
 				},
 				envs: this.ruleForm.envs,
 			}).then((response) => {

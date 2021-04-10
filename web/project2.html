@@ -14,7 +14,7 @@
 							<font size="2">构建命令: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.build_cmd }}</font>
+							<font size="2">{{ buildInfo.buildCmd }}</font>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
@@ -30,7 +30,7 @@
 							<font size="2">解压后目录: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.unzip_dir }}</font>
+							<font size="2">{{ buildInfo.unzipDir }}</font>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
@@ -46,7 +46,7 @@
 							<font size="2">特殊依赖: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.build_dependency }}</font>
+							<font size="2">{{ buildInfo.buildDependency }}</font>
 						</el-col>
 					</el-row>
 				</el-card>
@@ -65,7 +65,7 @@
 							<font size="2">启动脚本: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.start_cmd }}</font>
+							<font size="2">{{ buildInfo.startCmd }}</font>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
@@ -73,7 +73,7 @@
 							<font size="2">停止脚本: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.stop_cmd }}</font>
+							<font size="2">{{ buildInfo.stopCmd }}</font>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
@@ -81,7 +81,7 @@
 							<font size="2">启动前命令: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.pre_cmd }}</font>
+							<font size="2">{{ buildInfo.preCmd }}</font>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
@@ -89,7 +89,7 @@
 							<font size="2">Http端口: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.http_port }}</font>
+							<font size="2">{{ buildInfo.httpPort }}</font>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
@@ -97,7 +97,7 @@
 							<font size="2">Rpc端口: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.rpc_port }}</font>
+							<font size="2">{{ buildInfo.rpcPort }}</font>
 						</el-col>
 					</el-row>
 				</el-card>
@@ -125,8 +125,8 @@
 							</el-checkbox-group>
 						</el-form-item>
 
-						<el-form-item label="From Image" prop="from_image">
-							<el-select v-model="ruleForm.from_image" placeholder="Select">
+						<el-form-item label="From Image" prop="fromImage">
+							<el-select v-model="ruleForm.fromImage" placeholder="Select">
 								<el-option label="java8:v19" value="docker.snowballfinance.com:5000/java8:v19"></el-option>
 								<el-option label="base-v2020java8" value="docker.snowballfinance.com:5000/base-v2020java8"></el-option>
 							</el-select>

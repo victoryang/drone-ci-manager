@@ -75,13 +75,13 @@ func createScripts(c *gin.Context) {
 	project := c.Param("project")
 
 	type Body struct {
-		Param 		*Param 		`json:"param"`
+		Project 	*Project 	`json:"projectInfo"`
 		Envs 		[]string 	`json:"envs"`
 	}
 
-	p := &Param{Project: project}
+	p := &Project{Project: project}
 	b := Body {
-		Param: p,
+		Project: p,
 	}
 	err := c.BindJSON(&b)
 	if err!=nil {

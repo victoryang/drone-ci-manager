@@ -53,16 +53,16 @@ func (this *RollingCli) GetBuildInfo(project string) *RollingBuildInfo {
 }
 
 type RollingBasicInfo struct {
-	BuildCmd 	string 		`json:"build_cmd"`
+	BuildCmd 	string 		`json:"buildCmd"`
 	Target		string 		`json:"target"`
-	UnzipDir 	string 		`json:"unzip_dir"`
+	UnzipDir 	string 		`json:"unzipDir"`
 	Lang		string 		`json:"lang"`
-	BuildDependency 	string 		`json:"build_dependency"`
-	StartCmd 		string 		`json:"start_cmd"`
-	StopCmd 		string 		`json:"stop_cmd"`
-	PreCmd 		string 		`json:"pre_cmd"`
-	HttpPort	string 		`json:"http_port"`
-	RpcPort	string 			`json:"rpc_port"`
+	BuildDependency 	string 		`json:"buildDependency"`
+	StartCmd 		string 		`json:"startCmd"`
+	StopCmd 		string 		`json:"stopCmd"`
+	PreCmd 		string 		`json:"preCmd"`
+	HttpPort	string 		`json:"httpPort"`
+	RpcPort	string 			`json:"rpcPort"`
 }
 
 func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
