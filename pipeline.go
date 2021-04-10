@@ -64,7 +64,8 @@ func ProcessRepoAndEventInfo(repoInfo *drone.Repo, buildInfo *drone.Build, isBui
 		return nil
 	}
 
-	tag := timestamp + "_" + version + "_" + branch + "_" + "base-" + rollingInfo.Lang
+	from := GetDockerfileFromBytes(name, env)
+	tag := timestamp + "_" + version + "_" + branch + "_" + "base-" + from
 
 	return &DroneBuildInfo {
 		Project: name,

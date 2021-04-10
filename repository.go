@@ -33,3 +33,32 @@ func NewRepository(name string, gitSshUrl string) error {
 
 	return nil
 }
+
+func (p *Repository) AddRollingProject(projects []string) {
+	for _, proj :=range projects {
+		p.RollingProject = append(p.RollingProject, proj)
+	}
+}
+
+func EnableRepository(name string) error {
+	p := &Repository{}
+
+	result := ORM.Model(p).Where("name = ?", name).Update("is_actived", true)
+	return result.Error
+}
+
+func DisableRepository(name string) error {
+	p := &Repository{}
+
+	result := ORM.Model(p).Where("name = ?", name).Update("is_actived", false)
+	return result.Error
+}
+
+func DeleteRepository(name string, giturl string) error {
+	p := &Repository{
+		Name: name,
+	}
+
+	result := ORM.Unscoped().Delete(p)
+	return result.Error
+}
