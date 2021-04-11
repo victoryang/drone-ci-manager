@@ -32,8 +32,7 @@ var (
     ProjectDir = "projects"
 )
 
-type Project struct {
-    Project         string      `json:"-"`
+type ProjectInfo struct {
     UnZipDir        string      `json:"unzipDir"`
     HTTPPort        string      `json:"httpPort"`
     RPCPort         string      `json:"rpcPort"`
@@ -42,6 +41,11 @@ type Project struct {
     StopCmd         string      `json:"stopCmd"`
     FromImage       string      `json:"fromImage"`
     BuildDependency    string   `json:"buildDependency"`
+}
+
+type Project struct {
+    Project     string
+    Info        *ProjectInfo
 }
 
 func (p *Project) generateFile(target string, outputDir string) error {
@@ -60,7 +64,7 @@ func (p *Project) generateFile(target string, outputDir string) error {
     }
     defer f.Close()
 
-    err = t.Execute(f, p)
+    err = t.Execute(f, p.Info)
 
     if target == "Dockerfile" {
         return err

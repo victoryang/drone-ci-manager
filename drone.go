@@ -34,12 +34,12 @@ func (p *YamlPlugin) Find(ctx context.Context, req *config.Request) (*drone.Conf
 	logrus.Info("Repo Info", req.Repo)
 	logrus.Info("Build Info", req.Build)
 
-	bp,err := NewBuildPipeline(req.Repo, req.Build)
+	m,err := NewManifest(&req.Repo, &req.Build)
 	if err!=nil {
 		return nil,err
 	}
 
-	data, err := bp.Compile()
+	data, err := m.Compile()
 	if err!=nil {
 		return nil, err
 	}

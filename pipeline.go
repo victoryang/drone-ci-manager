@@ -20,6 +20,7 @@ const (
 
 type DroneBuildInfo struct {
 	Project 	string
+	Repository	string
 	Env 		string
 	Timestamp 	string
 	Version 	string
@@ -31,6 +32,7 @@ type DroneBuildInfo struct {
 
 func ProcessRepoAndEventInfo(repoInfo *drone.Repo, buildInfo *drone.Build, isBuildAction bool) *DroneBuildInfo {
 	name := repoInfo.Name
+	slug := repoInfo.Slug
 	branch := strings.TrimPrefix(buildInfo.Ref, "refs/heads/")
 
 	var env string
@@ -69,6 +71,7 @@ func ProcessRepoAndEventInfo(repoInfo *drone.Repo, buildInfo *drone.Build, isBui
 
 	return &DroneBuildInfo {
 		Project: name,
+		Repository: slug,
 		Env: env,
 		Timestamp: timestamp,
 		Version: version,
@@ -101,7 +104,7 @@ func NewBuildPipeline(repoInfo drone.Repo, buildInfo drone.Build) (*BuildPipelin
 
 func (p *BuildPipeline) Compile() (string, error) {
 
-	steps,err := p.Builder.CreateSteps()
+	steps,err := p.CreateSteps()
 	if err!=nil {
 		return "", err
 	}
@@ -142,13 +145,6 @@ func (p *BuildPipeline) CreateSteps() []*yaml.Container {
 	steps = append(steps, cleanUpStep)
 
 	return steps
-}
-
-func (p *BuildPipeline) CreateEnvCommands() []string {
-
-	return []string {
-		"export",
-	}
 }
 
 func (p *BuildPipeline) CreateBuildStep() *yaml.Container {

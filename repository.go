@@ -35,6 +35,17 @@ func NewRepository(name string, gitSshUrl string) error {
 	return nil
 }
 
+func GetProjectsbyRepo(name string) []string {
+	proj := &Repository{}
+
+	err := ORM.First(proj, "name = ?", name).Error
+	if err!=nil {
+		return nil
+	}
+
+	return proj.RollingProject
+}
+
 func (p *Repository) AddRollingProject(projects []string) {
 	for _, proj :=range projects {
 		p.RollingProject = append(p.RollingProject, proj)
