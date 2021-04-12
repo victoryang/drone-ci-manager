@@ -15,7 +15,14 @@ func formatErr(err error) gin.H {
 func createProject(c *gin.Context) {
 	project := c.Param("project")
 
-	err := CreateWorkingDir(project)
+	info := Rolling.GetBasicInfo(project)
+	if info==nil {
+		err := errors.New("Project not found in Rolling")
+		c.AbortWithStatusJSON(http.StatusBadRequest, formatErr(err))
+		return
+	}
+
+	err := CreateProject(project, info.gitUrl)
 	if err!=nil {
 		defer func() {
 			c.Error(err)
@@ -29,7 +36,7 @@ func createProject(c *gin.Context) {
 }
 
 func getProjectList(c *gin.Context) {
-	projects, err := GetProjectsFromDir()
+	projects, err := GetAllProjects()
 	if err!=nil {
 		defer func() {
 			c.Error(err)
@@ -58,7 +65,7 @@ func getProjectInfo(c *gin.Context) {
 func deleteProject(c *gin.Context) {
 	project := c.Param("project")
 
-	err := DeleteProjectFromDir(project)
+	err := DeleteProject(project)
 	if err!=nil {
 		defer func() {
 			c.Error(err)

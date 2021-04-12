@@ -57,6 +57,7 @@ const Project = {
 	data() {
 		return {
 			buildInfo: {
+				gitUrl: '',
 				buildCmd: '',
 				target: '',
 				unzipDir: '',

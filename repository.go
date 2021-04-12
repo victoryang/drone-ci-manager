@@ -46,7 +46,7 @@ func GetProjectsbyRepo(name string) []string {
 	return proj.RollingProject
 }
 
-func (p *Repository) AddRollingProject(projects []string) {
+func (p *Repository) AddRollingProjects(projects []string) {
 	for _, proj :=range projects {
 		p.RollingProject = append(p.RollingProject, proj)
 	}

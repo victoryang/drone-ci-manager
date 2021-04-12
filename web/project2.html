@@ -8,8 +8,8 @@
 							构建信息
 						</font>
 					</div>
-
-					<el-row style="margin-bottom: 20px;">
+					
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">构建命令: </font>
 						</el-col>
@@ -17,7 +17,7 @@
 							<font size="2">{{ buildInfo.buildCmd }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">目标文件: </font>
 						</el-col>
@@ -25,7 +25,7 @@
 							<font size="2">{{ buildInfo.target }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">解压后目录: </font>
 						</el-col>
@@ -33,7 +33,7 @@
 							<font size="2">{{ buildInfo.unzipDir }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">使用语言: </font>
 						</el-col>
@@ -41,7 +41,7 @@
 							<font size="2">{{ buildInfo.lang }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">特殊依赖: </font>
 						</el-col>
@@ -50,9 +50,9 @@
 						</el-col>
 					</el-row>
 				</el-card>
-			</el-col>
+			</el-col>	
 
-			<el-col :span="12" style="padding-left:20px">
+			<el-col :span="12" style="padding-left:10px">
 				<el-card class="content-card">
 					<div slot="header" class="content-card-header">
 						<font color="#99A9BF">
@@ -60,7 +60,7 @@
 						</font>
 					</div>
 
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">启动脚本: </font>
 						</el-col>
@@ -68,7 +68,7 @@
 							<font size="2">{{ buildInfo.startCmd }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">停止脚本: </font>
 						</el-col>
@@ -76,7 +76,7 @@
 							<font size="2">{{ buildInfo.stopCmd }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">启动前命令: </font>
 						</el-col>
@@ -84,7 +84,7 @@
 							<font size="2">{{ buildInfo.preCmd }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">Http端口: </font>
 						</el-col>
@@ -92,12 +92,41 @@
 							<font size="2">{{ buildInfo.httpPort }}</font>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 10px;">
 						<el-col :span="6">
 							<font size="2">Rpc端口: </font>
 						</el-col>
 						<el-col :span="12">
 							<font size="2">{{ buildInfo.rpcPort }}</font>
+						</el-col>
+					</el-row>
+				</el-card>
+			</el-col>
+		</el-row>
+
+		<el-row>
+			<el-col :span="16" style="padding-top: 10px">
+				<el-card>
+					<div slot="header" class="content-card-header">
+						<font color="#99A9BF">
+							仓库信息
+						</font>
+					</div>
+
+					<el-row style="margin-bottom: 20px;">
+						<el-col :span="6">
+							<font size="2">Git仓库地址: </font>
+						</el-col>
+						<el-col :span="12">
+							<font size="2">{{ buildInfo.gitUrl }}</font>
+						</el-col>
+					</el-row>
+					<el-row>
+						<el-col :span="6">
+							<font size="2">仓库状态: </font>
+						</el-col>
+						<el-col :span="12">
+							<el-switch v-model="repoActivated" size="2"></el-switch>
 						</el-col>
 					</el-row>
 				</el-card>

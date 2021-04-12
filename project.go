@@ -29,7 +29,7 @@ var (
     }
 
     InputBase = "template"
-    ProjectDir = "projects"
+    ProjectBase = "projects"
 )
 
 type ProjectInfo struct {
@@ -129,10 +129,10 @@ func (p *Project) generateFiles(envs []string) error {
 }
 
 func getProjectDir(project string) string {
-    return path.Join(ProjectDir, project)
+    return path.Join(ProjectBase, project)
 }
 
-func CreateWorkingDir(project string) error {
+func CreateProject(project string, gitUrl string) error {
     workingDir := getProjectDir(project)
 
     err := os.MkdirAll(workingDir, os.ModeDir)
@@ -143,8 +143,8 @@ func CreateWorkingDir(project string) error {
     return os.Chmod(workingDir, 0755)
 }
 
-func GetProjectsFromDir() ([]string, error){
-    projDir, err := os.Open(ProjectDir)
+func GetAllProjects() ([]string, error){
+    projDir, err := os.Open(ProjectBase)
     if err!=nil {
         return nil, err
     }
@@ -152,14 +152,14 @@ func GetProjectsFromDir() ([]string, error){
     return projDir.Readdirnames(-1)
 }
 
-func DeleteProjectFromDir(project string) error {
-    workingDir := path.Join(ProjectDir, project)
+func DeleteProject(project string) error {
+    workingDir := path.Join(ProjectBase, project)
 
     return os.RemoveAll(workingDir)
 }
 
 func GetDockerfileFromBytes(project string, env string) string {
-    workingDir := path.Join(ProjectDir, project)
+    workingDir := path.Join(ProjectBase, project)
     dir := path.Join(workingDir, EnvPrefix+strings.ToLower(env))
 
     fromBytes, _ := exec.Command("bash", "-c", `cd `+dir+` && head -n 1 Dockerfile  | awk -F'/' '{print $2}' | sed '{s/:/-/g}' | awk -F'_' '{print $NF}'`).Output()

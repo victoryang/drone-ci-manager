@@ -53,6 +53,7 @@ func (this *RollingCli) GetBuildInfo(project string) *RollingBuildInfo {
 }
 
 type RollingBasicInfo struct {
+	GitURL 		string 		`json:"gitUrl"`
 	BuildCmd 	string 		`json:"buildCmd"`
 	Target		string 		`json:"target"`
 	UnzipDir 	string 		`json:"unzipDir"`
