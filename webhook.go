@@ -36,7 +36,7 @@ func GetTagFromBuildInfo(proj string, buildInfo *drone.Build) *BuildInfo {
 	version := buildInfo.After[:8]
 
 	from := GetDockerfileFromBytes(proj, env)
-	tag := timestamp + "_" + version + "_" + branch + "_" + "base-" + from
+	tag := timestamp + "_" + version + "_" + branch + "_" + from
 	return &BuildInfo {
 		Project: proj,
 		Env: env,
@@ -45,21 +45,30 @@ func GetTagFromBuildInfo(proj string, buildInfo *drone.Build) *BuildInfo {
 }
 
 func processBuildEvent(req *webhook.Request) {
-
-	for _, stage := range req.Build.Stages {
-		project := stage.Name
-		info := GetTagFromBuildInfo(project, req.Build)
-
-		switch req.Action {
+	switch req.Action {
 		case "created":
-			Rolling.CreateImage(info.Project, info.Tag)
-		case "updated":
-			if req.Build.Status == "success" {
-				Rolling.UpdateImage(info.Project, info.Tag, info.Env, "Deployable", req.Build.Error)
-			} else if req.Build.Status == "failure" {
-				Rolling.UpdateImage(info.Project, info.Tag, info.Env, "Compile Failed", req.Build.Error)
+			fmt.Println("pipeline created: repo ", req.Repo.Slug)
+			projects := GetProjectsbyRepo(req.Repo.Slug)
+			for _,proj := range projects {
+				info := GetTagFromBuildInfo(proj, req.Build)
+				Rolling.CreateImage(proj, info.Tag)
 			}
-		}
+
+		case "updated":
+			for _,stage :=range req.Build.Stages {
+				project := stage.Name
+				info := GetTagFromBuildInfo(project, req.Build)
+
+				switch stage.Status {
+				case "running":
+				case "success":
+					Rolling.UpdateImage(info.Project, info.Tag, info.Env, "Deployable", stage.Error)
+				case "failure":
+					Rolling.UpdateImage(info.Project, info.Tag, info.Env, "Compile Failed", stage.Error)
+				default:
+					fmt.Println("status: ", stage.Status)
+				}
+			}
 	}
 
 	return

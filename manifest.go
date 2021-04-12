@@ -47,7 +47,7 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 		p := NewPipeline(proj)
 
 		from := GetDockerfileFromBytes(proj, env)
-		tag := timestamp + "_" + version + "_" + branch + "_" + "base-" + from
+		tag := timestamp + "_" + version + "_" + branch + "_" + from
 		p.ImageName = BuildImageName(proj, tag)
 
 		pipelines = append(pipelines, p)

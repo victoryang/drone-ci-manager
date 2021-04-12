@@ -170,10 +170,3 @@ func GetDockerfileFromBytes(project string, env string) string {
 
     return from
 }
-
-func GetScripts(project string, env string) {
-    workingDir := getProjectDir(project)
-    outputDir := path.Join(workingDir, EnvPrefix + strings.ToLower(env))
-
-    scripts := make(map[string]string)
-}
