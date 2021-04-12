@@ -25,6 +25,7 @@ func NewRepository(name string, gitSshUrl string) error {
 	proj := &Repository{
 		Name: name,
 		GitUrl: gitSshUrl,
+		RollingProject: make([]string, 0),
 		IsActived: true,
 	}
 
