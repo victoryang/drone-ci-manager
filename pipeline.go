@@ -1,14 +1,9 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"path"
-	"strconv"
-	"strings"
 
-	yamlv2 "gopkg.in/yaml.v2"
-	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-yaml/yaml"
 )
 
@@ -18,114 +13,30 @@ const (
 	PackagingWorkspace string = "/data/rolling-build/projects/"
 )
 
-type DroneBuildInfo struct {
+type Pipeline struct {
 	Project 	string
-	Repository	string
 	Env 		string
-	Timestamp 	string
-	Version 	string
 	BuildCmd 	string
 	Target		string
-	Lang		string
-	Tag 		string
+	ImageName 	string
 }
 
-func ProcessRepoAndEventInfo(repoInfo *drone.Repo, buildInfo *drone.Build, isBuildAction bool) *DroneBuildInfo {
-	name := repoInfo.Name
-	slug := repoInfo.Slug
-	branch := strings.TrimPrefix(buildInfo.Ref, "refs/heads/")
-
-	var env string
-	switch branch {
-	case "staging":
-		env = "staging"
-	case "release":
-		env = "release"
-	case "prod":
-		env = "rc"
-	case "sep":
-		env = "sep"
-	default:
-		fmt.Println("env not supported: ", env)
-		return nil
-	}
-
-	timestamp := strconv.FormatInt(buildInfo.Created, 10)
-	version := buildInfo.After[:8]
-
-	rollingInfo := Rolling.GetBuildInfo(name)
-	if rollingInfo == nil {
+func NewPipeline(project string, env string) *Pipeline {
+	info := Rolling.GetBuildInfo(project)
+	if info == nil {
 		fmt.Println("rolling build info empty")
 		return nil
 	}
 
-	switch rollingInfo.Lang {
-	case "java", "go", "node":
-	default:
-		fmt.Println("Language not supported now")
-		return nil
-	}
-
-	from := GetDockerfileFromBytes(name, env)
-	tag := timestamp + "_" + version + "_" + branch + "_" + "base-" + from
-
-	return &DroneBuildInfo {
-		Project: name,
-		Repository: slug,
+	return &Pipeline{
+		Project: project,
 		Env: env,
-		Timestamp: timestamp,
-		Version: version,
-		BuildCmd: rollingInfo.BuildCmd,
-		Target: rollingInfo.Target,
-		Lang: rollingInfo.Lang,
-		Tag: tag,
+		BuildCmd: info.BuildCmd,
+		Target: info.Target,
 	}
 }
 
-type BuildPipeline struct {
-	DroneBuildInfo
-	ImageName 	string
-}
-
-func NewBuildPipeline(repoInfo drone.Repo, buildInfo drone.Build) (*BuildPipeline,error) {
-
-	droneInfo := ProcessRepoAndEventInfo(&repoInfo, &buildInfo)
-	if droneInfo == nil {
-		return nil, errors.New("Done Info get failed")
-	}
-
-	imageName := BuildImageName(droneInfo.Project, droneInfo.Tag)
-
-	return &BuildPipeline {
-		DroneBuildInfo: *droneInfo,
-		ImageName: imageName,
-	}, nil
-}
-
-func (p *BuildPipeline) Compile() (string, error) {
-
-	steps,err := p.CreateSteps()
-	if err!=nil {
-		return "", err
-	}
-
-	pipeline := &yaml.Pipeline {
-		Kind: PipelineKind,
-		Type: PipelineRunnerExec,
-		Name: p.Project,
-		Steps: steps,
-	}
-
-	d, err := yamlv2.Marshal(pipeline)
-	if err!=nil {
-		fmt.Println("marshall error:", err)
-		return "", err
-	}
-
-	return string(d), nil
-}
-
-func (p *BuildPipeline) CreateSteps() []*yaml.Container {
+func (p *Pipeline) BuildSteps() []*yaml.Container {
 	steps := make([]*yaml.Container, 0)
 
 	// Build step
@@ -147,7 +58,7 @@ func (p *BuildPipeline) CreateSteps() []*yaml.Container {
 	return steps
 }
 
-func (p *BuildPipeline) CreateBuildStep() *yaml.Container {
+func (p *Pipeline) CreateBuildStep() *yaml.Container {
 
 	buildCommands := []string {
 		p.BuildCmd,
@@ -161,8 +72,8 @@ func (p *BuildPipeline) CreateBuildStep() *yaml.Container {
 	}
 }
 
-func (p *BuildPipeline) CreatePostBuildCommands() []string {
-	from = p.Target
+func (p *Pipeline) CreatePostBuildCommands() []string {
+	from := p.Target
 	to := path.Join(PackagingWorkspace, p.Project, "release-"+p.Env, p.Project+".zip")
 
 	return []string {
@@ -170,7 +81,7 @@ func (p *BuildPipeline) CreatePostBuildCommands() []string {
 	}
 }
 
-func (p *BuildPipeline) CreatePackagingStep() *yaml.Container {
+func (p *Pipeline) CreatePackagingStep() *yaml.Container {
 
 	packagingCommand := []string {
 		"cd " + path.Join(PackagingWorkspace, p.Project, "release-"+p.Env),
@@ -183,7 +94,7 @@ func (p *BuildPipeline) CreatePackagingStep() *yaml.Container {
 	}
 }
 
-func (p *BuildPipeline) CreatePublishStep() *yaml.Container {
+func (p *Pipeline) CreatePublishStep() *yaml.Container {
 
 	publishCommand := []string {
 		"echo $CI_JOB_TOKEN | docker login --username $CI_USER --password-stdin $CI_REGISTRY",
@@ -196,7 +107,7 @@ func (p *BuildPipeline) CreatePublishStep() *yaml.Container {
 	}
 }
 
-func (p *BuildPipeline) CreateCleanupStep() *yaml.Container {
+func (p *Pipeline) CreateCleanupStep() *yaml.Container {
 
 	cleanUpCommand := []string {
 		"docker rmi " + p.ImageName,
