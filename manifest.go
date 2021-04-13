@@ -12,7 +12,6 @@ import (
 )
 
 type Manifest struct {
-	Repository	string
 	Env 		string
 	Timestamp 	string
 	Version 	string
@@ -60,7 +59,6 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 	}
 
 	return &Manifest {
-		Repository: repo.Name,
 		Env: env,
 		Timestamp: timestamp,
 		Version: version,
