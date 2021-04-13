@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "io/ioutil"
     "os"
     "os/exec"
     "path"
@@ -10,6 +11,9 @@ import (
 )
 
 var (
+    InputBase = "template"
+    ProjectBase = "projects"
+
     Environments = []string{"sep", "staging", "rc", "release"}
     EnvPrefix = "release-"
 
@@ -27,12 +31,10 @@ var (
             "docker.snowballfinance.com:5000/base-v2020java8",
         },
     }
-
-    InputBase = "template"
-    ProjectBase = "projects"
 )
 
 type ProjectInfo struct {
+    GitUrl          string      `json:"gitUrl"`
     UnZipDir        string      `json:"unzipDir"`
     HTTPPort        string      `json:"httpPort"`
     RPCPort         string      `json:"rpcPort"`
@@ -76,7 +78,7 @@ func (p *Project) generateFile(target string, outputDir string) error {
 func (p *Project) generateFiles(envs []string) error {
     fmt.Println("Generating scripts...")
 
-    workingDir := getProjectDir(p.Project)
+    workingDir,_ := getProjectDir(p.Project, p.Info.GitUrl)
     _,err := os.Stat(workingDir)
     if err!=nil {
         return err
@@ -128,14 +130,26 @@ func (p *Project) generateFiles(envs []string) error {
     return err
 }
 
-func getProjectDir(project string) string {
-    return path.Join(ProjectBase, project)
+/*------*/
+
+func getProjectDir(project string, gitUrl string) (string,error) {
+    repo, err := ParseGitUrl(gitUrl)
+    if err!=nil {
+        return "", err
+    }
+
+    repo = strings.Replace(repo, "/", "_", -1)
+
+    return path.Join(ProjectBase, repo, project), nil
 }
 
 func CreateProject(project string, gitUrl string) error {
-    workingDir := getProjectDir(project)
+    workingDir,err := getProjectDir(project, gitUrl)
+    if err!=nil {
+        return nil
+    }
 
-    err := os.MkdirAll(workingDir, os.ModeDir)
+    err = os.MkdirAll(workingDir, os.ModeDir)
     if err!=nil {
         return err
     }
@@ -144,18 +158,53 @@ func CreateProject(project string, gitUrl string) error {
 }
 
 func GetAllProjects() ([]string, error){
-    projDir, err := os.Open(ProjectBase)
+    namespaces, err := ioutil.ReadDir(ProjectBase)
     if err!=nil {
         return nil, err
     }
 
-    return projDir.Readdirnames(-1)
+    projects := make([]string, 0)
+    for _, n :=range namespaces{
+        projs, err := ioutil.ReadDir(path.Join(ProjectBase, n.Name()))
+        if err!=nil {
+            continue
+        }
+
+        for _,p :=range projs {
+            projects = append(projects, p.Name())
+        }
+    }
+
+    return projects, nil
 }
 
-func DeleteProject(project string) error {
-    workingDir := path.Join(ProjectBase, project)
+func DeleteProject(project string, gitUrl string) error {
+    workingDir,err := getProjectDir(project, gitUrl)
+    if err!=nil {
+        return nil
+    }
 
     return os.RemoveAll(workingDir)
+}
+
+func GetProjectsByUrl(gitUrl string) []string {
+    workingDir,err := getProjectDir(project, gitUrl)
+    if err!=nil {
+        return nil
+    }
+
+    projects := make([]string, 0)
+    projDir, err := ioutil.ReadDir(workingDir)
+    if err!=nil {
+        return nil
+    }
+
+    for _, p :=range projDir {
+        name := p.Name()
+        projects = append(projects, p.Name())
+    }
+
+    return projects
 }
 
 func GetDockerfileFromBytes(project string, env string) string {

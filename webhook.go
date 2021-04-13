@@ -47,8 +47,13 @@ func GetTagFromBuildInfo(proj string, buildInfo *drone.Build) *BuildInfo {
 func processBuildEvent(req *webhook.Request) {
 	switch req.Action {
 		case "created":
-			fmt.Println("pipeline created: repo ", req.Repo.Slug)
-			projects := GetProjectsbyRepo(req.Repo.Slug)
+			projects,err := GetProjectsByUrl(repoInfo.SSHURL)
+			if err!=nil {
+				fmt.Println("could not resolve git url:", err)
+				return
+			}
+
+			fmt.Println("pipeline created: repo ", repo.Name)
 			for _,proj := range projects {
 				info := GetTagFromBuildInfo(proj, req.Build)
 				Rolling.CreateImage(proj, info.Tag)

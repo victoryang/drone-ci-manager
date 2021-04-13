@@ -39,8 +39,10 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 	timestamp := strconv.FormatInt(buildInfo.Created, 10)
 	version := buildInfo.After[:8]
 
-	repo := repoInfo.Slug
-	projects := GetProjectsbyRepo(repo)
+	projects,err := GetProjectsByUrl(repoInfo.SSHURL)
+	if err!=nil {
+		return nil, err
+	}
 
 	pipelines := make([]*Pipeline, 0)
 	for _,proj := range projects {
@@ -58,7 +60,7 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 	}
 
 	return &Manifest {
-		Repository: repo,
+		Repository: repo.Name,
 		Env: env,
 		Timestamp: timestamp,
 		Version: version,

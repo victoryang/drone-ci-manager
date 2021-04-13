@@ -121,12 +121,9 @@
 							<font size="2">{{ buildInfo.gitUrl }}</font>
 						</el-col>
 					</el-row>
-					<el-row>
+					<el-row style="margin-bottom: 20px;">
 						<el-col :span="6">
 							<font size="2">仓库状态: </font>
-						</el-col>
-						<el-col :span="12">
-							<el-switch v-model="repoActivated" size="2"></el-switch>
 						</el-col>
 					</el-row>
 				</el-card>
@@ -163,6 +160,10 @@
 					</el-form>
 				</el-card>
 			</el-col>
+		</el-row>
+
+		<el-row style="padding-top: 30px">
+			<el-button type="danger" @click.prevent="deleteProject">删除项目</el-button>
 		</el-row>
 	</el-card>
 </div>

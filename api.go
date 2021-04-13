@@ -22,7 +22,7 @@ func createProject(c *gin.Context) {
 		return
 	}
 
-	err := CreateProject(project, info.gitUrl)
+	err := CreateProject(project, info.GitURL)
 	if err!=nil {
 		defer func() {
 			c.Error(err)
@@ -65,7 +65,14 @@ func getProjectInfo(c *gin.Context) {
 func deleteProject(c *gin.Context) {
 	project := c.Param("project")
 
-	err := DeleteProject(project)
+	info := Rolling.GetBasicInfo(project)
+	if info==nil {
+		err := errors.New("Project not found in Rolling")
+		c.AbortWithStatusJSON(http.StatusBadRequest, formatErr(err))
+		return
+	}
+
+	err := DeleteProject(project, info.GitURL)
 	if err!=nil {
 		defer func() {
 			c.Error(err)

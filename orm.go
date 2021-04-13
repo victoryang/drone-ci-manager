@@ -1,4 +1,4 @@
-package orm
+package main
 
 import (
 	"fmt"
@@ -6,8 +6,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm/schema"
 	"gorm.io/gorm"
-
-	"git.snowballfinance.com/ops/sce-rolling/config"
 )
 
 const (
@@ -21,8 +19,8 @@ var ORM *gorm.DB
 func init() {
 
 	var err error
-	dsn := config.GetString("MYSQL_CONN_STR")
-	MySQL, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	dsn := MYSQL_CONN_STR
+	ORM, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix: "sce_",	// table name prefix, table for `User` would be `t_users`
 			SingularTable: false,	// use singular table name, table for `User` would be `user` with this option enabled
@@ -32,7 +30,7 @@ func init() {
 		panic(fmt.Sprintf("failed to connect database: %s", err))
 	}
 
-	sqlDB, _ := MySQL.DB()
+	sqlDB, _ := ORM.DB()
 	sqlDB.SetMaxIdleConns(30)
 	sqlDB.SetMaxOpenConns(30)
 }

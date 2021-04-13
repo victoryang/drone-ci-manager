@@ -102,6 +102,7 @@ const Project = {
 		createScrpit() {
 			this.$http.post("/projects/" + this.$route.params.project + "/scripts", {
 				projectInfo: {
+					gitUrl: this.buildInfo.gitUrl,
 					unzipDir: this.buildInfo.unzipDir,
 					buildDependency: this.buildInfo.buildDependency,
 					startCmd: this.buildInfo.startCmd,
@@ -116,6 +117,15 @@ const Project = {
 				this.$message("创建成功");
 			}, (response) => {
 				alert("创建失败: "+response.data.ErrMessage);
+				this.$router.back();
+			})
+		},
+		deleteProject() {
+			this.$http.delete("/projects/" + this.$route.params.project).then((response) => {
+				this.$message("删除成功");
+				this.$router.back();
+			}, (response) => {
+				alert("删除失败: "+response.data.ErrMessage);
 				this.$router.back();
 			})
 		},
