@@ -45,7 +45,7 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 
 	pipelines := make([]*Pipeline, 0)
 	for _,proj := range projects {
-		p := NewPipeline(proj)
+		p := NewPipeline(proj, env)
 
 		from := GetDockerfileFromBytes(proj, env)
 		tag := timestamp + "_" + version + "_" + branch + "_" + from

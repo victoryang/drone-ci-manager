@@ -187,24 +187,23 @@ func DeleteProject(project string, gitUrl string) error {
     return os.RemoveAll(workingDir)
 }
 
-func GetProjectsByUrl(gitUrl string) []string {
-    workingDir,err := getProjectDir(project, gitUrl)
+func GetProjectsByUrl(gitUrl string) ([]string,error) {
+    repoDir,err := getProjectDir("", gitUrl)
     if err!=nil {
-        return nil
+        return nil,err
     }
 
     projects := make([]string, 0)
-    projDir, err := ioutil.ReadDir(workingDir)
+    projDir, err := ioutil.ReadDir(repoDir)
     if err!=nil {
-        return nil
+        return nil,err
     }
 
     for _, p :=range projDir {
-        name := p.Name()
         projects = append(projects, p.Name())
     }
 
-    return projects
+    return projects,nil
 }
 
 func GetDockerfileFromBytes(project string, env string) string {
