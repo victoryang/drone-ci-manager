@@ -103,6 +103,7 @@ const Project = {
 		createScrpit() {
 			this.$http.post("/projects/" + this.$route.params.project + "/scripts", {
 				projectInfo: {
+					project: this.$route.params.project,
 					gitUrl: this.buildInfo.gitUrl,
 					unzipDir: this.buildInfo.unzipDir,
 					buildDependency: this.buildInfo.buildDependency,

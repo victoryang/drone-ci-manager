@@ -33,7 +33,8 @@ var (
     }
 )
 
-type ProjectInfo struct {
+type Project struct {
+    Project         string      `json:"project"`
     GitUrl          string      `json:"gitUrl"`
     UnZipDir        string      `json:"unzipDir"`
     HTTPPort        string      `json:"httpPort"`
@@ -43,11 +44,6 @@ type ProjectInfo struct {
     StopCmd         string      `json:"stopCmd"`
     FromImage       string      `json:"fromImage"`
     BuildDependency    string   `json:"buildDependency"`
-}
-
-type Project struct {
-    Project     string
-    Info        *ProjectInfo
 }
 
 func (p *Project) generateFile(target string, outputDir string) error {
@@ -66,7 +62,7 @@ func (p *Project) generateFile(target string, outputDir string) error {
     }
     defer f.Close()
 
-    err = t.Execute(f, p.Info)
+    err = t.Execute(f, p)
 
     if target == "Dockerfile" {
         return err
@@ -78,7 +74,7 @@ func (p *Project) generateFile(target string, outputDir string) error {
 func (p *Project) generateFiles(envs []string) error {
     fmt.Println("Generating scripts...")
 
-    workingDir,_ := getProjectDir(p.Project, p.Info.GitUrl)
+    workingDir,_ := getProjectDir(p.Project, p.GitUrl)
     _,err := os.Stat(workingDir)
     if err!=nil {
         return err
@@ -206,7 +202,7 @@ func GetProjectsByUrl(gitUrl string) ([]string,error) {
     return projects,nil
 }
 
-func GetDockerfileFromBytes(project string, gitUrl string, senv string) string {
+func GetDockerfileFromBytes(project string, gitUrl string, env string) string {
     workingDir, err := getProjectDir(project, gitUrl)
     if err!=nil {
         return ""
