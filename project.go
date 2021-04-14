@@ -206,10 +206,13 @@ func GetProjectsByUrl(gitUrl string) ([]string,error) {
     return projects,nil
 }
 
-func GetDockerfileFromBytes(project string, env string) string {
-    workingDir := path.Join(ProjectBase, project)
-    dir := path.Join(workingDir, EnvPrefix+strings.ToLower(env))
+func GetDockerfileFromBytes(project string, gitUrl string, senv string) string {
+    workingDir, err := getProjectDir(project, gitUrl)
+    if err!=nil {
+        return ""
+    }
 
+    dir := path.Join(workingDir, EnvPrefix+strings.ToLower(env))
     fromBytes, _ := exec.Command("bash", "-c", `cd `+dir+` && head -n 1 Dockerfile  | awk -F'/' '{print $2}' | sed '{s/:/-/g}' | awk -F'_' '{print $NF}'`).Output()
     from := strings.TrimSpace(string(fromBytes))
     if len(from) == 0 {

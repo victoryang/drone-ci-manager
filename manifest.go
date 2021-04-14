@@ -47,7 +47,7 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 	for _,proj := range projects {
 		p := NewPipeline(proj, env)
 
-		from := GetDockerfileFromBytes(proj, env)
+		from := GetDockerfileFromBytes(proj, repoInfo.SSHURL, env)
 		tag := timestamp + "_" + version + "_" + branch + "_" + from
 		p.ImageName = BuildImageName(proj, tag)
 

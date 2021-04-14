@@ -94,6 +94,7 @@ const Project = {
 			this.$http.get("/projects/" + this.$route.params.project).then((response) => {
 				console.log(response.data);
 				this.buildInfo = response.data;
+				this.$refs['ruleForm'].resetFields();
 			}, (response) => {
 				alert("请求异常");
 				this.$router.back();
