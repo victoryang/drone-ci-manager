@@ -96,8 +96,8 @@ func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 }
 
 func (this *RollingCli) CreateImage(project string, tag string) error {
-	jsonStr := []byte(`{"Project":"` + project + `","Tag":"` + tag + `"}`)
-	req, err := http.NewRequest("POST", this.Addr + "/image/create_image", bytes.NewBuffer(jsonStr))
+	jsonStr := []byte(`{"project":"` + project + `","tag":"` + tag + `"}`)
+	req, err := http.NewRequest("POST", this.Addr + "/image/create", bytes.NewBuffer(jsonStr))
 	req.Header.Set("User-Agent", "Rolling Build")
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
@@ -110,12 +110,12 @@ func (this *RollingCli) CreateImage(project string, tag string) error {
 }
 
 func (this *RollingCli) UpdateImage(project string, tag string, env string, deployStatus string, failLog string) error {
-	jsonStr := []byte(`{"Project":"` + project + `","Tag":"` + tag + `","Env":"` + env + `","DeployStatus":"` + deployStatus + `"}`)
+	jsonStr := []byte(`{"project":"` + project + `","tag":"` + tag + `","env":"` + env + `","deployStatus":"` + deployStatus + `"}`)
 	if len(failLog) > 0 {
 		failLog = url.QueryEscape(failLog)
-		jsonStr = []byte(`{"Project":"` + project + `","Tag":"` + tag + `","Env":"` + env + `","DeployStatus":"` + deployStatus + `","MaintainPlan":"` + failLog + `"}`)
+		jsonStr = []byte(`{"project":"` + project + `","tag":"` + tag + `","env":"` + env + `","deployStatus":"` + deployStatus + `","maintainPlan":"` + failLog + `"}`)
 	}
-	req, err := http.NewRequest("POST", this.Addr + "/image/update_image", bytes.NewBuffer(jsonStr))
+	req, err := http.NewRequest("POST", this.Addr + "/image/update", bytes.NewBuffer(jsonStr))
 	req.Header.Set("User-Agent", "Rolling Build")
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
