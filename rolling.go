@@ -67,7 +67,7 @@ type RollingBasicInfo struct {
 }
 
 func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
-	fmt.Println("get build info from rolling")
+	fmt.Println("get basic info from rolling")
 
 	url := this.Addr + "/projects/" + project + "/basic_info"
 	req, err := http.NewRequest("GET", url, nil)
@@ -75,7 +75,7 @@ func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Println("get build info err:", err)
+		fmt.Println("get basic info err:", err)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -87,7 +87,7 @@ func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err !=nil {
-		fmt.Println("read build info err:", err)
+		fmt.Println("read basic info err:", err)
 		return nil
 	}
 

@@ -12,7 +12,6 @@ import (
 )
 
 type DroneServer struct {
-	ID 			string
 	Endpoint 			string
 	YamlPluginSecret 		string
 	WebhookPluginSecret		string
@@ -22,13 +21,14 @@ type YamlPlugin struct {
 
 }
 
-func NewYamlPlugin(YamlPluginSecret string) http.Handler {
+func NewYamlPlugin(idx int) http.Handler {
 
 	logrus.SetLevel(logrus.DebugLevel)
 
+	secret := DroneServers[idx].YamlPluginSecret
 	handler := config.Handler(
 		&YamlPlugin{},
-		YamlPluginSecret,
+		secret,
 		logrus.StandardLogger(),
 	)
 
@@ -85,16 +85,17 @@ func (p *RegistryPlugin) List(ctx context.Context, req *registry.Request) ([]*dr
 }
 
 type WebhookPlugin struct {
-
+	Id 			int
 }
 
-func NewWebhookPlugin(WebhookPluginSecret string) http.Handler {
+func NewWebhookPlugin(idx int) http.Handler {
 
 	logrus.SetLevel(logrus.DebugLevel)
 
+	secret := DroneServers[idx].WebhookPluginSecret
 	handler := webhook.Handler(
 		&WebhookPlugin{},
-		WebhookPluginSecret,
+		secret,
 		logrus.StandardLogger(),
 	)
 

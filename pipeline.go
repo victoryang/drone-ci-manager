@@ -61,7 +61,7 @@ func (p *Pipeline) BuildSteps() []*yaml.Container {
 func (p *Pipeline) CreateBuildStep() *yaml.Container {
 
 	buildCommands := []string {
-		p.BuildCmd,
+		"bash -c \"" + p.BuildCmd + "\"",
 	}
 	postBuildCommands := p.CreatePostBuildCommands()
 	buildCommands = append(buildCommands, postBuildCommands...)
