@@ -80,6 +80,11 @@ func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("project info not found")
+		return nil
+	}
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err !=nil {
 		fmt.Println("read build info err:", err)

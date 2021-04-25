@@ -14,10 +14,11 @@ func main(){
 	router.Use(Logger())
 
 	v1 := router.Group("/api/v1")
-	v1.POST("/projects/:project", createRollingProject)
-	v1.POST("/drone/build-yaml", gin.WrapH(NewYamlPlugin()))
-	v1.POST("/drone/webhook", gin.WrapH(NewWebhookPlugin()))
-	//v1.POST("/drone/registry-info", gin.WrapH(NewRegistryPlugin()))
+	for _,ds :=range DroneServers {
+		v1.POST("/drone/"+ ds.ID + "/buildyaml", gin.WrapH(NewYamlPlugin(ds.YamlPluginSecret)))
+		v1.POST("/drone/" + ds.ID + "/webhook", gin.WrapH(NewYamlPlugin(ds.WebhookPluginSecret)))
+		//v1.POST("/drone/registry-info", gin.WrapH(NewRegistryPlugin()))
+	}
 
 	projects := router.Group("/projects")
 	projects.GET("/", getProjectList)

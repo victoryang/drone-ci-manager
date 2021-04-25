@@ -11,11 +11,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type DroneServer struct {
+	ID 			string
+	Endpoint 			string
+	YamlPluginSecret 		string
+	WebhookPluginSecret		string
+}
+
 type YamlPlugin struct {
 
 }
 
-func NewYamlPlugin() http.Handler {
+func NewYamlPlugin(YamlPluginSecret string) http.Handler {
 
 	logrus.SetLevel(logrus.DebugLevel)
 
@@ -81,7 +88,7 @@ type WebhookPlugin struct {
 
 }
 
-func NewWebhookPlugin() http.Handler {
+func NewWebhookPlugin(WebhookPluginSecret string) http.Handler {
 
 	logrus.SetLevel(logrus.DebugLevel)
 
