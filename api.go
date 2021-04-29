@@ -23,7 +23,14 @@ func createProject(c *gin.Context) {
 		return
 	}
 
-	err := CreateProject(project, info.GitURL)
+	repo, err := FirstOrCreateRepository(info.GitURL)
+	if err!=nil {
+		err := errors.New(fmt.Sprintf("Create project err:", err))
+		c.AbortWithStatusJSON(http.StatusBadRequest, formatErr(err))
+		return
+	}
+
+	err = repo.AddProject(project)
 	if err!=nil {
 		defer func() {
 			c.Error(err)
@@ -73,7 +80,14 @@ func deleteProject(c *gin.Context) {
 		return
 	}
 
-	err := DeleteProject(project, info.GitURL)
+	repo, err := GetRepository(info.GitURL)
+	if err!=nil {
+		err := errors.New(fmt.Sprintf("get repo err:", err))
+		c.AbortWithStatusJSON(http.StatusBadRequest, formatErr(err))
+		return
+	}
+
+	err = repo.RemoveProject(project)
 	if err!=nil {
 		defer func() {
 			c.Error(err)

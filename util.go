@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"strings"
 )
 
@@ -14,4 +16,48 @@ func ParseGitUrl(gitSshUrl string) (string,error) {
 	res := strings.TrimSuffix(resList[1], ".git")
 
 	return res, nil
+}
+
+func IsDirExist(dir string) (bool,error) {
+	_,err := os.Stat(dir)
+	if err == nil {
+		return true, nil
+	}
+
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+
+	return false, err
+}
+
+func Mkdir(dir string) error {
+	err := os.Mkdir(dir, os.ModeDir)
+	if err!=nil {
+		fmt.Printf("MkdirAll for %v fails, please check\n", dir)
+		return err
+	}
+
+	return os.Chmod(dir, 0644)
+}
+
+func MkdirAll(dir string) error {
+	err := os.MkdirAll(dir, os.ModeDir)
+	if err!=nil {
+		fmt.Printf("MkdirAll for %v fails, please check\n", dir)
+		return err
+	}
+
+	return os.Chmod(dir, 0644)
+}
+
+func RemoveAll(dir string) error {
+    err := os.RemoveAll(dir)
+    if err!=nil {
+        fmt.Printf("Cleaning up %v fails, please check\n", dir)
+        return err
+    }
+
+    fmt.Printf("Cleaning up %v successuflly\n", dir)
+    return nil
 }

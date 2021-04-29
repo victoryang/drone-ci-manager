@@ -38,7 +38,7 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 	timestamp := strconv.FormatInt(buildInfo.Created, 10)
 	version := buildInfo.After[:8]
 
-	projects,err := GetProjectsByUrl(repoInfo.SSHURL)
+	projects,err := GetProjectsByRepo(repoInfo.SSHURL)
 	if err!=nil {
 		return nil, err
 	}

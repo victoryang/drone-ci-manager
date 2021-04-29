@@ -9,6 +9,7 @@ import (
 )
 
 //go:generate go-bindata -prefix "web/" -o=web.go -pkg=main web/...
+//go:generate go-bindata -prefix "template/" -o=template.go -pkg=main template/...
 
 func main(){
 	router := gin.Default()

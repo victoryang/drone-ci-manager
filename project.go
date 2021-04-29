@@ -2,34 +2,27 @@ package main
 
 import (
     "fmt"
-    "io/ioutil"
     "os"
     "os/exec"
     "path"
     "strings"
     "text/template"
+
+    scripts "drone-ci-manager/template"
 )
 
 var (
-    InputBase = "template"
     ProjectBase = "projects"
 
     Environments = []string{"sep", "staging", "rc", "release"}
     EnvPrefix = "release-"
 
-    TemplateFiles = []string{
+    ScriptTemplate = []string{
         "deploy_1_stop.sh",
         "deploy_2_replace.sh",
         "deploy_3_start.sh",
         //"deploy_4_rollback.sh",
         "Dockerfile",
-    }
-
-    FromImages = map[string][]string {
-        "java": []string {
-            "docker.snowballfinance.com:5000/java8:v19",
-            "docker.snowballfinance.com:5000/base-v2020java8",
-        },
     }
 )
 
@@ -47,7 +40,12 @@ type Project struct {
 }
 
 func (p *Project) generateFile(target string, outputDir string) error {
-    temp, err := template.ParseFiles(path.Join(InputBase, target))
+    content,err := scripts.Asset(target)
+    if err!=nil {
+        return err
+    }
+
+    temp, err := template.New(target).Parse(string(content))
     if err!=nil {
         return err
     } 
@@ -74,8 +72,7 @@ func (p *Project) generateFile(target string, outputDir string) error {
 func (p *Project) generateFiles(envs []string) error {
     fmt.Println("Generating scripts...")
 
-    workingDir,_ := getProjectDir(p.Project, p.GitUrl)
-    _,err := os.Stat(workingDir)
+    projectBaseDir,err := p.getProjectBaseDir()
     if err!=nil {
         return err
     }
@@ -83,26 +80,25 @@ func (p *Project) generateFiles(envs []string) error {
     fmt.Println("Ready to generate scripts for ", p.Project)
 
     for _,e :=range envs {
-        env := EnvPrefix + strings.ToLower(e)
-        envDir := path.Join(workingDir, env)
-        fmt.Println("\nGenerating ", envDir)
 
+        env := EnvPrefix + strings.ToLower(e)
+        envDir := path.Join(projectBaseDir, env)
+
+        fmt.Println("Generating ", envDir)
         // create sub directory
-        err = os.Mkdir(envDir, os.ModeDir)
+        err = Mkdir(envDir)
         if err!=nil {
-            fmt.Println("mk sub dir err:", err)
+            fmt.Println("Create subdir err:", err)
             return err
         }
-        os.Chmod(envDir, 0755)
 
         // generate files
-        for _,file :=range TemplateFiles {
+        for _,target :=range ScriptTemplate {
 
-            if err = p.generateFile(file, envDir); err!=nil {
-                fmt.Println(file, "is generated failed:", err)
+            if err = p.generateFile(target, envDir); err!=nil {
+                fmt.Println(target, "is generated failed:", err)
                 break
             }
-            fmt.Printf("%v is generated successfully\n", file)
         }
 
         if err!=nil {
@@ -112,13 +108,6 @@ func (p *Project) generateFiles(envs []string) error {
 
     if err!=nil {
         fmt.Println("Generating files fails")
-        defer func() {
-            if err = os.RemoveAll(workingDir); err==nil {
-                fmt.Printf("Clean up %v successuflly\n", workingDir)
-            } else {
-                fmt.Printf("Clean up %v fails, please handle it\n", workingDir)
-            }
-        }()
     } else {
         fmt.Println("\nFiles are generated successfully")
     }
@@ -126,7 +115,26 @@ func (p *Project) generateFiles(envs []string) error {
     return err
 }
 
-/*------*/
+func (p *Project) getProjectBaseDir() (string,error) {
+    repo, err := ParseGitUrl(p.GitUrl)
+    if err!=nil {
+        return "", err
+    }
+
+    repo = strings.Replace(repo, "/", "_", -1)
+    baseDir := path.Join(ProjectBase, repo, p.Project)
+
+    isExist, err := IsDirExist(baseDir)
+    if err!=nil {
+        return "", err
+    }
+
+    if isExist==false {
+        err = MkdirAll(baseDir)
+    }
+
+    return baseDir, err
+}
 
 func getProjectDir(project string, gitUrl string) (string,error) {
     repo, err := ParseGitUrl(gitUrl)
@@ -137,69 +145,6 @@ func getProjectDir(project string, gitUrl string) (string,error) {
     repo = strings.Replace(repo, "/", "_", -1)
 
     return path.Join(ProjectBase, repo, project), nil
-}
-
-func CreateProject(project string, gitUrl string) error {
-    workingDir,err := getProjectDir(project, gitUrl)
-    if err!=nil {
-        return nil
-    }
-
-    err = os.MkdirAll(workingDir, os.ModeDir)
-    if err!=nil {
-        return err
-    }
-
-    return os.Chmod(workingDir, 0755)
-}
-
-func GetAllProjects() ([]string, error){
-    namespaces, err := ioutil.ReadDir(ProjectBase)
-    if err!=nil {
-        return nil, err
-    }
-
-    projects := make([]string, 0)
-    for _, n :=range namespaces{
-        projs, err := ioutil.ReadDir(path.Join(ProjectBase, n.Name()))
-        if err!=nil {
-            continue
-        }
-
-        for _,p :=range projs {
-            projects = append(projects, p.Name())
-        }
-    }
-
-    return projects, nil
-}
-
-func DeleteProject(project string, gitUrl string) error {
-    workingDir,err := getProjectDir(project, gitUrl)
-    if err!=nil {
-        return nil
-    }
-
-    return os.RemoveAll(workingDir)
-}
-
-func GetProjectsByUrl(gitUrl string) ([]string,error) {
-    repoDir,err := getProjectDir("", gitUrl)
-    if err!=nil {
-        return nil,err
-    }
-
-    projects := make([]string, 0)
-    projDir, err := ioutil.ReadDir(repoDir)
-    if err!=nil {
-        return nil,err
-    }
-
-    for _, p :=range projDir {
-        projects = append(projects, p.Name())
-    }
-
-    return projects,nil
 }
 
 func GetDockerfileFromBytes(project string, gitUrl string, env string) string {

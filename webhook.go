@@ -49,7 +49,7 @@ func processBuildEvent(req *webhook.Request) {
 
 	switch req.Action {
 		case "created":
-			projects,err := GetProjectsByUrl(repo.SSHURL)
+			projects,err := GetProjectsByRepo(repo.SSHURL)
 			if err!=nil {
 				fmt.Println("could not resolve git url:", err)
 				return
