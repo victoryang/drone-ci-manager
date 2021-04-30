@@ -94,7 +94,11 @@ func GetRepository(gitUrl string) (*Repository, error) {
 		return nil, err
 	}
 
-	repo := &Repository{}
+	mux := new(sync.Mutex)
+	repo := &Repository{
+		Mux: mux,
+		GitUrl: gitUrl,
+	}
 	result := ORM.Where("name = ?", name).First(repo)
 
 	return repo, result.Error
@@ -115,7 +119,12 @@ func GetProjectsByRepo(gitUrl string) ([]string, error) {
 		return nil, result.Error
 	}
 
-	return strings.Split(repo.Projects, ","), nil
+	projects := strings.Split(repo.Projects, ",")
+	if len(projects) == 0 {
+		return errors.New("No projects found")
+	}
+
+	return projects, nil
 }
 
 func GetAllProjects() ([]string, error) {
@@ -139,6 +148,10 @@ func GetAllProjects() ([]string, error) {
 		}
 
 		pString = strings.Join(projectSlice, ",")
+	}
+
+	if pString == "" {
+		return nil, nil
 	}
 
 	return strings.Split(pString, ","), nil
