@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 	"sync"
+
+	"github.com/jinzhu/gorm"
 )
 
 func init() {
@@ -11,6 +13,7 @@ func init() {
 }
 
 type Repository struct {
+	gorm.Model
 	Mux 		*sync.Mutex `gorm:"-"`
 	Name 		string 		`gorm:"column:name;primary_key"`
 	GitUrl 		string 		`gorm:"column:git_url"`
@@ -82,8 +85,13 @@ func (r *Repository) RemoveProject(project string) error {
 
 		new = append(new, v)
 	}
-	r.Projects = strings.Join(new, ",")
 
+	if len(new) == 0 {
+		result := ORM.Delete(r)
+		return result.Error
+	}
+
+	r.Projects = strings.Join(new, ",")
 	result := ORM.Save(r)
 	return result.Error
 }
@@ -139,6 +147,10 @@ func GetAllProjects() ([]string, error) {
 	for _, r :=range repos {
 		if pString == "" {
 			pString = r.Projects
+			continue
+		}
+
+		if r.Projects == "" {
 			continue
 		}
 
