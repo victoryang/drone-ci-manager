@@ -13,7 +13,7 @@
 						<el-col :span="6">
 							<font size="2">构建命令: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.buildCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -21,7 +21,7 @@
 						<el-col :span="6">
 							<font size="2">目标文件: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.target" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -29,7 +29,7 @@
 						<el-col :span="6">
 							<font size="2">解压后目录: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.unzipDir" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -37,7 +37,7 @@
 						<el-col :span="6">
 							<font size="2">使用语言: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.lang" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -45,7 +45,7 @@
 						<el-col :span="6">
 							<font size="2">特殊依赖: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.buildDependency" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -66,7 +66,7 @@
 						<el-col :span="6">
 							<font size="2">启动脚本: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.startCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -74,7 +74,7 @@
 						<el-col :span="6">
 							<font size="2">停止脚本: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.stopCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -82,7 +82,7 @@
 						<el-col :span="6">
 							<font size="2">启动前命令: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.preCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -90,7 +90,7 @@
 						<el-col :span="6">
 							<font size="2">Http端口: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.httpPort" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -98,7 +98,7 @@
 						<el-col :span="6">
 							<font size="2">Rpc端口: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.rpcPort" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
@@ -115,15 +115,15 @@
 						</font>
 					</div>
 
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 16px;">
 						<el-col :span="6">
 							<font size="2">Git仓库地址: </font>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="16">
 							<el-input type="textarea" autosize v-model="buildInfo.gitUrl" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
-					<el-row style="margin-bottom: 20px;">
+					<el-row style="margin-bottom: 16px;">
 						<el-col :span="6">
 							<font size="2">仓库状态: </font>
 						</el-col>
@@ -143,7 +143,7 @@
 						<el-button style="float: right; padding: 3px 0" type="text" @click.prevent="createScrpit">创建</el-button>
 					</div>
 
-					<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
+					<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" class="demo-ruleForm">
 						<el-form-item label="勾选环境" prop="envs">
 							<el-checkbox-group v-model="ruleForm.envs">
 								<el-checkbox label="sep" name="envs"></el-checkbox>
@@ -156,7 +156,7 @@
 						<el-form-item label="From Image" prop="fromImage">
 							<el-select v-model="ruleForm.fromImage" placeholder="Select">
 								<el-option label="java8:v19" value="docker.snowballfinance.com:5000/java8:v19"></el-option>
-								<el-option label="base-v2020java8" value="docker.snowballfinance.com:5000/base-v2020java8"></el-option>
+								<el-option label="base-v1616java8" value="docker.snowballfinance.com:5000/base-v1616java8"></el-option>
 							</el-select>
 						</el-form-item>
 					</el-form>
