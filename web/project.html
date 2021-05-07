@@ -14,7 +14,7 @@
 							<font size="2">构建命令: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.buildCmd }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.buildCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -22,7 +22,7 @@
 							<font size="2">目标文件: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.target }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.target" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -30,7 +30,7 @@
 							<font size="2">解压后目录: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.unzipDir }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.unzipDir" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -38,7 +38,7 @@
 							<font size="2">使用语言: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.lang }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.lang" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -46,7 +46,7 @@
 							<font size="2">特殊依赖: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.buildDependency }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.buildDependency" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 				</el-card>
@@ -67,7 +67,7 @@
 							<font size="2">启动脚本: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.startCmd }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.startCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -75,7 +75,7 @@
 							<font size="2">停止脚本: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.stopCmd }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.stopCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -83,7 +83,7 @@
 							<font size="2">启动前命令: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.preCmd }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.preCmd" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -91,7 +91,7 @@
 							<font size="2">Http端口: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.httpPort }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.httpPort" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 10px;">
@@ -99,7 +99,7 @@
 							<font size="2">Rpc端口: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.rpcPort }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.rpcPort" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 				</el-card>
@@ -120,7 +120,7 @@
 							<font size="2">Git仓库地址: </font>
 						</el-col>
 						<el-col :span="12">
-							<font size="2">{{ buildInfo.gitUrl }}</font>
+							<el-input type="textarea" autosize v-model="buildInfo.gitUrl" size="2" :readonly="true"></el-input>
 						</el-col>
 					</el-row>
 					<el-row style="margin-bottom: 20px;">
