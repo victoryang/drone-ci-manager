@@ -20,15 +20,14 @@ func main(){
 		id := strconv.Itoa(idx)
 		v1.POST("/drone/"+ id + "/buildyaml", gin.WrapH(NewYamlPlugin(idx)))
 		v1.POST("/drone/" + id + "/webhook", gin.WrapH(NewWebhookPlugin(idx)))
-		//v1.POST("/drone/registry-info", gin.WrapH(NewRegistryPlugin()))
 	}
 
 	projects := router.Group("/projects")
 	projects.GET("/", getProjectList)
-	projects.GET("/:project", getProjectInfo)
-	projects.POST("/:project/scripts", createScripts)
 	projects.POST("/:project", createProject)
+	projects.GET("/:project", getProjectInfo)
 	projects.DELETE("/:project", deleteProject)
+	projects.POST("/:project/scripts", createScripts)
 
 	//静态文件
 	router.GET("/", func(c *gin.Context) {
@@ -40,5 +39,5 @@ func main(){
 		AssetDir: AssetDir,
 	}
 	router.StaticFS("/web", &webFS)
-	router.Run(":5000")
+	router.Run(":9900")
 }

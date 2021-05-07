@@ -8,14 +8,11 @@ import (
     "strings"
     "text/template"
 
-    scripts "drone-ci-manager/template"
+    scripts "sce-build-manager/template"
 )
 
 var (
     ProjectBase = "projects"
-
-    Environments = []string{"sep", "staging", "rc", "release"}
-    EnvPrefix = "release-"
 
     ScriptTemplate = []string{
         "deploy_1_stop.sh",
@@ -28,8 +25,8 @@ var (
 
 type Project struct {
     Project         string      `json:"project"`
-    GitUrl          string      `json:"gitUrl"`
     UnZipDir        string      `json:"unzipDir"`
+    Lang            string      `json:"lang"`
     HTTPPort        string      `json:"httpPort"`
     RPCPort         string      `json:"rpcPort"`
     StartCmd        string      `json:"startCmd"`
@@ -40,7 +37,7 @@ type Project struct {
 }
 
 func (p *Project) generateFile(target string, outputDir string) error {
-    content,err := scripts.Asset(target)
+    content,err := scripts.Asset(path.Join(p.Lang, target))
     if err!=nil {
         return err
     }
@@ -72,23 +69,17 @@ func (p *Project) generateFile(target string, outputDir string) error {
 func (p *Project) generateFiles(envs []string) error {
     fmt.Println("Generating scripts...")
 
-    projectBaseDir,err := p.getProjectBaseDir()
+    projectDir := path.Join(ProjectBase, p.Project)
+    err := GetOrCreateDir(projectDir)
     if err!=nil {
         return err
     }
 
-    fmt.Println("Ready to generate scripts for ", p.Project)
+    for _,env :=range envs {
 
-    for _,e :=range envs {
-
-        env := EnvPrefix + strings.ToLower(e)
-        envDir := path.Join(projectBaseDir, env)
-
-        fmt.Println("Generating ", envDir)
-        // create sub directory
-        err = Mkdir(envDir)
+        envDir := path.Join(projectDir, "release-" + strings.ToLower(env))
+        err = GetOrCreateDir(envDir)
         if err!=nil {
-            fmt.Println("Create subdir err:", err)
             return err
         }
 
@@ -115,50 +106,14 @@ func (p *Project) generateFiles(envs []string) error {
     return err
 }
 
-func (p *Project) getProjectBaseDir() (string,error) {
-    repo, err := ParseGitUrl(p.GitUrl)
-    if err!=nil {
-        return "", err
-    }
+func GetDockerfileFromBytes(project string, env string) string {
+    dir := path.Join(ProjectBase, project, "release-" + strings.ToLower(env))
 
-    repo = strings.Replace(repo, "/", "_", -1)
-    baseDir := path.Join(ProjectBase, repo, p.Project)
-
-    isExist, err := IsDirExist(baseDir)
-    if err!=nil {
-        return "", err
-    }
-
-    if isExist==false {
-        err = MkdirAll(baseDir)
-    }
-
-    return baseDir, err
-}
-
-func getProjectDir(project string, gitUrl string) (string,error) {
-    repo, err := ParseGitUrl(gitUrl)
-    if err!=nil {
-        return "", err
-    }
-
-    repo = strings.Replace(repo, "/", "_", -1)
-
-    return path.Join(ProjectBase, repo, project), nil
-}
-
-func GetDockerfileFromBytes(project string, gitUrl string, env string) string {
-    workingDir, err := getProjectDir(project, gitUrl)
-    if err!=nil {
-        return ""
-    }
-
-    dir := path.Join(workingDir, EnvPrefix+strings.ToLower(env))
     fromBytes, _ := exec.Command("bash", "-c", `cd `+dir+` && head -n 1 Dockerfile  | awk -F'/' '{print $2}' | sed '{s/:/-/g}' | awk -F'_' '{print $NF}'`).Output()
     from := strings.TrimSpace(string(fromBytes))
     if len(from) == 0 {
         return ""
     }
 
-    return from
+    return "_" + from
 }

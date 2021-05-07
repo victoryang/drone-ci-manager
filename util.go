@@ -18,6 +18,15 @@ func ParseGitUrl(gitSshUrl string) (string,error) {
 	return res, nil
 }
 
+func GetOrCreateDir(dir string) error {
+    isExist, _ := IsDirExist(dir)
+    if isExist {
+        return nil
+    }
+
+    return MkdirAll(dir)
+}
+
 func IsDirExist(dir string) (bool,error) {
 	_,err := os.Stat(dir)
 	if err == nil {
@@ -38,7 +47,7 @@ func Mkdir(dir string) error {
 		return err
 	}
 
-	return os.Chmod(dir, 0644)
+	return os.Chmod(dir, 0755)
 }
 
 func MkdirAll(dir string) error {
@@ -48,7 +57,7 @@ func MkdirAll(dir string) error {
 		return err
 	}
 
-	return os.Chmod(dir, 0644)
+	return os.Chmod(dir, 0755)
 }
 
 func RemoveAll(dir string) error {

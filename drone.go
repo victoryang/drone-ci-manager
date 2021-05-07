@@ -6,7 +6,6 @@ import (
 
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/drone-go/plugin/config"
-	"github.com/drone/drone-go/plugin/registry"
 	"github.com/drone/drone-go/plugin/webhook"
 	"github.com/sirupsen/logrus"
 )
@@ -56,34 +55,6 @@ func (p *YamlPlugin) Find(ctx context.Context, req *config.Request) (*drone.Conf
 	}, nil
 }
 
-type RegistryPlugin struct {
-
-}
-
-func NewRegistryPlugin() http.Handler {
-	logrus.SetLevel(logrus.DebugLevel)
-
-	handler := registry.Handler(
-		YamlPluginSecret,
-		&RegistryPlugin{},
-		logrus.StandardLogger(),
-	)
-
-	return handler
-}
-
-func (p *RegistryPlugin) List(ctx context.Context, req *registry.Request) ([]*drone.Registry, error) {
-	credentials := []*drone.Registry{
-		{
-			Address:  HarborBaseUrl,
-			Username: HarborUser,
-			Password: HarborSecret,
-		},
-	}
-
-	return credentials, nil
-}
-
 type WebhookPlugin struct {
 	Id 			int
 }
@@ -94,7 +65,7 @@ func NewWebhookPlugin(idx int) http.Handler {
 
 	secret := DroneServers[idx].WebhookPluginSecret
 	handler := webhook.Handler(
-		&WebhookPlugin{},
+		&WebhookPlugin{Id: idx},
 		secret,
 		logrus.StandardLogger(),
 	)
@@ -103,9 +74,11 @@ func NewWebhookPlugin(idx int) http.Handler {
 }
 
 func (p *WebhookPlugin) Deliver(ctx context.Context, req *webhook.Request) error {
+
+	ciAddr := DroneServers[p.Id].Endpoint
 	switch req.Event {
 		case "build":
-			go processBuildEvent(req)
+			go processBuildEvent(req, ciAddr)
 		case "user":
 			go processUserEvent(req)
 		case "repo":

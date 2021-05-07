@@ -61,7 +61,7 @@ func (p *Pipeline) BuildSteps() []*yaml.Container {
 func (p *Pipeline) CreateBuildStep() *yaml.Container {
 
 	buildCommands := []string {
-		"bash -c \"" + "set -ex\n\n" + p.BuildCmd + "\"",
+		"bash -c \"" + p.BuildCmd + "\"",
 	}
 	postBuildCommands := p.CreatePostBuildCommands()
 	buildCommands = append(buildCommands, postBuildCommands...)
@@ -85,7 +85,7 @@ func (p *Pipeline) CreatePackagingStep() *yaml.Container {
 
 	packagingCommand := []string {
 		"cd " + path.Join(PackagingWorkspace, p.Project, "release-"+p.Env),
-		"docker build -t " + p.ImageName + " .",
+		"sudo docker build -t " + p.ImageName + " .",
 	}
 
 	return &yaml.Container {
@@ -97,8 +97,8 @@ func (p *Pipeline) CreatePackagingStep() *yaml.Container {
 func (p *Pipeline) CreatePublishStep() *yaml.Container {
 
 	publishCommand := []string {
-		"echo $CI_JOB_TOKEN | docker login --username $CI_USER --password-stdin $CI_REGISTRY",
-		"docker push " + p.ImageName,
+		"echo $CI_JOB_TOKEN | sudo docker login --username $CI_USER --password-stdin $CI_REGISTRY",
+		"sudo docker push " + p.ImageName,
 	}
 
 	return &yaml.Container {
@@ -110,11 +110,12 @@ func (p *Pipeline) CreatePublishStep() *yaml.Container {
 func (p *Pipeline) CreateCleanupStep() *yaml.Container {
 
 	cleanUpCommand := []string {
-		"docker rmi " + p.ImageName,
+		"sudo docker rmi " + p.ImageName,
 	}
 
 	return &yaml.Container {
 		Name: "cleanup",
+		Failure: "ignore",
 		Commands: cleanUpCommand,
 	}
 }

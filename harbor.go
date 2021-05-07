@@ -15,11 +15,11 @@ const (
 	HarborBaseUrl = "hub.snowballfinance.com"
 	HarborPublicProject = "cicd"
 
-	HarborTimeout = 10
+	HarborTimeout = 5
 	HarborApiPath = "api/v2.0"
 
-	HarborUser = "admin"
-	HarborSecret = "Harbor12345"
+	HarborUser = "Harbor"
+	HarborSecret = "HarborX123"
 )
 
 func BuildImageName(project string, tag string) string {

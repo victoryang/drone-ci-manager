@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	MYSQL_CONN_STR = "root:123456@tcp(127.0.0.1:3306)/sce_rolling?parseTime=true&charset=utf8&loc=Local"
+	MYSQL_CONN_STR = "sce_rolling_user:yoB6Vn2oRhfg@tcp(10.16.8.132:3306)/sce_rolling?parseTime=true&charset=utf8&loc=Local"
 )
 
 // MySQL orm

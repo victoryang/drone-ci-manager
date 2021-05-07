@@ -26,7 +26,7 @@ type RollingBuildInfo struct {
 func (this *RollingCli) GetBuildInfo(project string) *RollingBuildInfo {
 	fmt.Println("get build info from rolling")
 
-	url := this.Addr + "/projects/" + project + "/build_info"
+	url := this.Addr + "/projects/" + project + "/buildinfo"
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "Rolling Build")
 	req.Header.Set("Content-Type", "application/json")
@@ -69,7 +69,7 @@ type RollingBasicInfo struct {
 func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 	fmt.Println("get basic info from rolling")
 
-	url := this.Addr + "/projects/" + project + "/basic_info"
+	url := this.Addr + "/projects/" + project + "/basicinfo"
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "Rolling Build")
 	req.Header.Set("Content-Type", "application/json")
@@ -80,7 +80,7 @@ func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode!=http.StatusOK {
 		fmt.Println("project info not found")
 		return nil
 	}
@@ -100,8 +100,7 @@ func (this *RollingCli) GetBasicInfo(project string) *RollingBasicInfo {
 	return r
 }
 
-func (this *RollingCli) CreateImage(project string, tag string) error {
-	jsonStr := []byte(`{"project":"` + project + `","tag":"` + tag + `"}`)
+func (this *RollingCli) CreateImage(jsonStr []byte) error {
 	req, err := http.NewRequest("POST", this.Addr + "/image/create", bytes.NewBuffer(jsonStr))
 	req.Header.Set("User-Agent", "Rolling Build")
 	req.Header.Set("Content-Type", "application/json")

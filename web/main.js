@@ -106,6 +106,7 @@ const Project = {
 					project: this.$route.params.project,
 					gitUrl: this.buildInfo.gitUrl,
 					unzipDir: this.buildInfo.unzipDir,
+					lang: this.buildInfo.lang,
 					buildDependency: this.buildInfo.buildDependency,
 					startCmd: this.buildInfo.startCmd,
 					stopCmd: this.buildInfo.stopCmd,

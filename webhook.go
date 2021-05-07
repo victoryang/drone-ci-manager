@@ -15,7 +15,7 @@ type BuildInfo struct {
 	Tag 		string
 }
 
-func GetTagFromBuildInfo(proj string, gitUrl string, buildInfo *drone.Build) *BuildInfo {
+func GetTagFromBuildInfo(proj string, buildInfo *drone.Build) *BuildInfo {
 	branch := strings.TrimPrefix(buildInfo.Ref, "refs/heads/")
 	var env string
 	switch branch {
@@ -35,8 +35,8 @@ func GetTagFromBuildInfo(proj string, gitUrl string, buildInfo *drone.Build) *Bu
 	timestamp := strconv.FormatInt(buildInfo.Created, 10)
 	version := buildInfo.After[:8]
 
-	from := GetDockerfileFromBytes(proj, gitUrl, env)
-	tag := timestamp + "_" + version + "_" + branch + "_" + from
+	from := GetDockerfileFromBytes(proj, env)
+	tag := timestamp + "_" + version + "_" + branch + from
 	return &BuildInfo {
 		Project: proj,
 		Env: env,
@@ -44,27 +44,28 @@ func GetTagFromBuildInfo(proj string, gitUrl string, buildInfo *drone.Build) *Bu
 	}
 }
 
-func processBuildEvent(req *webhook.Request) {
+func processBuildEvent(req *webhook.Request, ciAddr string) {
 	repo := req.Repo
 
 	switch req.Action {
 		case "created":
-			projects,err := GetProjectsByRepo(repo.SSHURL)
+			projects, repoName, err := GetProjectsByRepo(repo.SSHURL)
 			if err!=nil {
 				fmt.Println("could not resolve git url:", err)
 				return
 			}
 
-			fmt.Println("pipeline created: repo ", repo.Name)
+			fmt.Println("pipeline created for ", repoName)
 			for _,proj := range projects {
-				info := GetTagFromBuildInfo(proj, repo.SSHURL, req.Build)
-				Rolling.CreateImage(proj, info.Tag)
+				info := GetTagFromBuildInfo(proj, req.Build)
+				jsonStr := []byte(`{"project":"` + proj + `","tag":"` + info.Tag + `","ciAddr":"` + ciAddr + `"}`)
+				Rolling.CreateImage(jsonStr)
 			}
 
 		case "updated":
 			for _,stage :=range req.Build.Stages {
 				project := stage.Name
-				info := GetTagFromBuildInfo(project, repo.SSHURL, req.Build)
+				info := GetTagFromBuildInfo(project, req.Build)
 
 				switch stage.Status {
 				case "running":

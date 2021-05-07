@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 
@@ -12,9 +13,12 @@ func init() {
  	ORM.AutoMigrate(&Repository{})
 }
 
+var (
+	Mux = new(sync.Mutex)
+)
+
 type Repository struct {
 	gorm.Model
-	Mux 		*sync.Mutex `gorm:"-"`
 	Name 		string 		`gorm:"column:name;primary_key"`
 	GitUrl 		string 		`gorm:"column:git_url"`
 	Projects 	string 		`gorm:"column:projects"`
@@ -26,12 +30,10 @@ func FirstOrCreateRepository(gitUrl string) (*Repository, error) {
 		return nil, err
 	}
 
-	mux := new(sync.Mutex)
-	mux.Lock()
-	defer mux.Unlock()
+	Mux.Lock()
+	defer Mux.Unlock()
 
 	repo := &Repository{
-		Mux: mux,
 		GitUrl: gitUrl,
 	}
 	result := ORM.FirstOrCreate(repo, Repository{Name: name})
@@ -40,13 +42,13 @@ func FirstOrCreateRepository(gitUrl string) (*Repository, error) {
 }
 
 func (r *Repository) AddProject(project string) error {
-	r.Mux.Lock()
-	defer r.Mux.Unlock()
+	Mux.Lock()
+	defer Mux.Unlock()
 
-	var new []string
+	var latest []string
 	var isExist bool = false
 	if len(r.Projects) == 0 {
-		new = []string{project}
+		latest = []string{project}
 	} else {
 		old := strings.Split(r.Projects, ",")
 		for _,v :=range old {
@@ -57,41 +59,42 @@ func (r *Repository) AddProject(project string) error {
 		}
 
 		if isExist == false {
-			new = append(old, project)
+			latest = append(old, project)
 		} else {
-			new = old
+			latest = old
 		}
 	}
-	r.Projects = strings.Join(new, ",")
+	r.Projects = strings.Join(latest, ",")
 
 	result := ORM.Save(r)
 	return result.Error
 }
 
 func (r *Repository) RemoveProject(project string) error {
-	r.Mux.Lock()
-	defer r.Mux.Unlock()
+	Mux.Lock()
+	defer Mux.Unlock()
 
 	if len(r.Projects) == 0 {
 		return errors.New("Not belongs to this repository")
 	}
 
-	var new []string
+	var latest []string
 	old := strings.Split(r.Projects, ",")
 	for _, v :=range old {
 		if v == project {
 			continue
 		}
 
-		new = append(new, v)
+		latest = append(latest, v)
 	}
 
-	if len(new) == 0 {
+	if len(latest) == 0 {
 		result := ORM.Delete(r)
 		return result.Error
 	}
 
-	r.Projects = strings.Join(new, ",")
+	r.Projects = strings.Join(latest, ",")
+
 	result := ORM.Save(r)
 	return result.Error
 }
@@ -102,9 +105,7 @@ func GetRepository(gitUrl string) (*Repository, error) {
 		return nil, err
 	}
 
-	mux := new(sync.Mutex)
 	repo := &Repository{
-		Mux: mux,
 		GitUrl: gitUrl,
 	}
 	result := ORM.Where("name = ?", name).First(repo)
@@ -112,10 +113,11 @@ func GetRepository(gitUrl string) (*Repository, error) {
 	return repo, result.Error
 }
 
-func GetProjectsByRepo(gitUrl string) ([]string, error) {
+func GetProjectsByRepo(gitUrl string) ([]string, string,error) {
 	name, err := ParseGitUrl(gitUrl)
 	if err!=nil {
-		return nil, err
+		fmt.Println("could not resolve git url:", err)
+		return nil, name, err
 	}
 
 	repo := &Repository{
@@ -124,15 +126,15 @@ func GetProjectsByRepo(gitUrl string) ([]string, error) {
 
 	result := ORM.First(repo)
 	if result.Error!=nil {
-		return nil, result.Error
+		return nil, name, result.Error
 	}
 
 	projects := strings.Split(repo.Projects, ",")
 	if len(projects) == 0 {
-		return errors.New("No projects found")
+		return nil, name, errors.New("No projects found")
 	}
 
-	return projects, nil
+	return projects, name, nil
 }
 
 func GetAllProjects() ([]string, error) {

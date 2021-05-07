@@ -38,7 +38,7 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 	timestamp := strconv.FormatInt(buildInfo.Created, 10)
 	version := buildInfo.After[:8]
 
-	projects,err := GetProjectsByRepo(repoInfo.SSHURL)
+	projects,_,err := GetProjectsByRepo(repoInfo.SSHURL)
 	if err!=nil {
 		return nil, err
 	}
@@ -50,8 +50,8 @@ func NewManifest(repoInfo *drone.Repo, buildInfo *drone.Build) (*Manifest,error)
 			continue
 		}
 
-		from := GetDockerfileFromBytes(proj, repoInfo.SSHURL, env)
-		tag := timestamp + "_" + version + "_" + branch + "_" + from
+		from := GetDockerfileFromBytes(proj, env)
+		tag := timestamp + "_" + version + "_" + branch + from
 		p.ImageName = BuildImageName(proj, tag)
 
 		pipelines = append(pipelines, p)
